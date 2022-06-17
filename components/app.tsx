@@ -37,6 +37,10 @@ const Home: FC = () => {
   const [adDisplay, setAdDisplay] = useState(false)
   const [provider, setProvider] = useState<WsProvider>()
   const [api, setApi] = useState<ApiPromise>()
+  const [adIndex, setAdIndex] = useState<number>()
+  const [adIpfs, setAdIpfs] = useState<string>('')
+  const [claimAmount, setClaimAmount] = useState<string>('')
+  const [rewardAmount, setRewardAmount] = useState<string>('')
 
   const connectProvider = async () => {
     try {
@@ -70,13 +74,53 @@ const Home: FC = () => {
     api?.tx.user
       .addProfile(age, PreferencesEnum[preferences])
       .signAndSend(SENDER, { signer: injector.signer }, (status) => {
-        console.log(status)
 
-        setTipText(adDisplay ? 'Your customized ad' : 'You can set up ad display')
+        setTipText(adDisplay ? 'Wait will your customized ads are ready...' : 'You can set up ad display')
         setShowProfile(false)
-        setShowAd(adDisplay)
+        setTimeout(() => {
+          queryUserAd()
+        }, 3000)
       });
 
+  }
+
+  const queryUserAd = async () => {
+    const SENDER = selectAccount;
+    api?.query.user
+      .users(SENDER)
+      .then((c: any) => {
+        const adArr = JSON.parse(c.value.matchedAds.toString())
+        if (adArr.length) {
+          const adIndex = adArr[0] as number
+          setAdIndex(adIndex)
+          getAdInfo(adIndex)
+        }
+
+      })
+  }
+
+  const decodeUtf8 = (bytes: string | any[]) => {
+    var encoded = "";
+    for (var i = 0; i < bytes.length; i++) {
+      encoded += '%' + bytes[i].toString(16);
+    }
+    return decodeURIComponent(encoded);
+  }
+
+  const getAdInfo = async (idx: number) => {
+    api?.query.ad
+      .impressionAds(idx)
+      .then((c: any) => {
+        const url: string = decodeUtf8(c.value.metadata)
+        const cli: string = (+c.value.cpi / Math.pow(10, 12)) + ''
+        const amount: string = (+c.value.amount / Math.pow(10, 12)) + ''
+
+        setAdIpfs(url)
+        setShowAd(adDisplay)
+        setClaimAmount(cli)
+        setRewardAmount(amount)
+        setTipText('Your customized ad')
+      })
   }
 
   const handleShowConnectModal = () => {
@@ -118,18 +162,17 @@ const Home: FC = () => {
     setShowClaimModal(false)
   }
 
-  const handleClaimConfirmModal = async() => {
+  const handleClaimConfirmModal = async () => {
     const SENDER = selectAccount;
     await web3Enable('AdMeta');
     const injector = await web3FromAddress(SENDER);
     setTipText('Wait will your claim reward are ready...')
     api?.tx.user
-      .claimReward(1)
+      .claimReward(adIndex)
       .signAndSend(SENDER, { signer: injector.signer }, (status) => {
-        setTipText('Your customized ad')
         setShowClaimModal(false)
       });
-    
+
   }
 
   const handleAd = () => {
@@ -214,14 +257,20 @@ const Home: FC = () => {
         {
           isShowAd
             ?
-            <Ad handleAd={handleAd} />
+            <Ad handleAd={handleAd} adIpfs={adIpfs} />
             :
             null
         }
         {
           isShowClaimModal
             ?
-            <Claim isShowModal={isShowClaimModal} handleClaimCancelModal={handleClaimCancelModal} handleClaimConfirmModal={handleClaimConfirmModal} />
+            <Claim
+              isShowModal={isShowClaimModal}
+              handleClaimCancelModal={handleClaimCancelModal}
+              handleClaimConfirmModal={handleClaimConfirmModal}
+              claimAmount={claimAmount}
+              rewardAmount={rewardAmount}
+            />
             :
             null
         }

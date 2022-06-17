@@ -8,9 +8,11 @@ type Props = {
   isShowModal: boolean
   handleClaimCancelModal: () => void
   handleClaimConfirmModal: () => void
+  claimAmount: string
+  rewardAmount: string
 };
 
-const Claim: FC<Props> = ({ isShowModal, handleClaimConfirmModal, handleClaimCancelModal }) => {
+const Claim: FC<Props> = ({ isShowModal, handleClaimConfirmModal, handleClaimCancelModal, claimAmount, rewardAmount }) => {
   return (
     <Modal
       title=""
@@ -25,9 +27,9 @@ const Claim: FC<Props> = ({ isShowModal, handleClaimConfirmModal, handleClaimCan
       <div className={styles.modalContentLogo}>
         <LogoSVG width={1280} height={920} />
       </div>
-      <p className={styles.claimText}>Claim reward for ad xxx.</p>
-      <p className={styles.claimText}>Reward amount: xxx</p>
-      <p className={styles.claimText}>Estimated transaction fee: xxx</p>
+      <p className={styles.claimText}>Claim reward for ad {claimAmount}.</p>
+      <p className={styles.claimText}>Reward amount: {rewardAmount}</p>
+      <p className={styles.claimText}>Estimated transaction fee: 0</p>
       <Button shape="round" type="primary" onClick={handleClaimConfirmModal} style={{marginTop: 20}}>Submit</Button>
     </Modal>
   )
