@@ -44,7 +44,8 @@ const Home: FC = () => {
 
   const connectProvider = async () => {
     try {
-      const wsProvider = new WsProvider('ws://testnet.admeta.network:9944');
+      // const wsProvider = new WsProvider('ws://testnet.admeta.network:9944');
+      const wsProvider = new WsProvider('ws://127.0.0.1:9944');
       setProvider(wsProvider)
       const api = await ApiPromise.create({ provider: wsProvider });
       setApi(api)
