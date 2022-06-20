@@ -8,9 +8,10 @@ type Props = {
   handleProfileGender: (gender: number) => void
   handleProfilePreferences: (preferences: number) => void
   handleProfileAdDisplay: (adDisplay: boolean) => void
+  adSwitchDisplay: boolean
 };
 
-const SetProfile: FC<Props> = ({ handleSubmitProfile, handleProfileAge, handleProfileGender, handleProfilePreferences, handleProfileAdDisplay }) => {
+const SetProfile: FC<Props> = ({ handleSubmitProfile, handleProfileAge, handleProfileGender, handleProfilePreferences, handleProfileAdDisplay, adSwitchDisplay }) => {
   return (
     <div className={styles.formInfo}>
       <div className={styles.formWrp}>
@@ -53,7 +54,7 @@ const SetProfile: FC<Props> = ({ handleSubmitProfile, handleProfileAge, handlePr
         </div>
         <div className={styles.inpuItem}>
           <span className={styles.left}>Ad Display</span>
-          <Switch onChange={e => handleProfileAdDisplay(e)} />
+          <Switch defaultChecked={adSwitchDisplay} onChange={e => handleProfileAdDisplay(e)} />
         </div>
         <Button type="primary" style={{ width: '100px' }} shape="round" size="large" onClick={handleSubmitProfile}>Submit
         </Button >

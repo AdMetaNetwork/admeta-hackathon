@@ -9,9 +9,11 @@ type Props = {
   address: string;
   isConnected: boolean;
   handleShowConnectModal: () => void;
+  handleCreateProfile: () => void
+  handleShowProfileAd: () => void
 };
 
-const TopBar: FC<Props> = ({ address, isConnected, handleShowConnectModal }) => {
+const TopBar: FC<Props> = ({ address, isConnected, handleShowConnectModal, handleCreateProfile, handleShowProfileAd }) => {
 
   const formatAddress = (address: string): string => {
     const str_1 = address.substring(0, 4)
@@ -28,14 +30,21 @@ const TopBar: FC<Props> = ({ address, isConnected, handleShowConnectModal }) => 
       {
         isConnected
           ?
-          <Button className={styles.right} type="primary" onClick={handleShowConnectModal}>
-            <Avatar style={{ border: '2px solid #ffffff' }} size={32} src='https://joeschmoe.io/api/v1/random' />
-            <span className={styles.address}>{formatAddress(address)}</span>
-          </Button >
+          <div className={styles.btns}>
+            <div className={styles.btnC} onClick={handleCreateProfile}>Profile</div>
+            <div className={styles.btnC} onClick={handleShowProfileAd}>AD</div>
+            <Button className={styles.right} type="primary" onClick={handleShowConnectModal}>
+              <Avatar style={{ border: '2px solid #ffffff' }} size={32} src='https://joeschmoe.io/api/v1/random' />
+              <span className={styles.address}>{formatAddress(address)}</span>
+            </Button >
+          </div>
           :
-          <Button className={styles.right} type="primary" onClick={handleShowConnectModal}>
-            <span className={styles.btnLabel}>Connect to Polkadot.js Extension</span>
-          </Button >
+          <div className={styles.btns}>
+            <Button className={styles.right} type="primary" onClick={handleShowConnectModal}>
+              <span className={styles.btnLabel}>Connect to Polkadot.js Extension</span>
+            </Button >
+          </div>
+
       }
     </div >
   )

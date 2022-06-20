@@ -27,7 +27,7 @@ const Claim: FC<Props> = ({ isShowModal, handleClaimConfirmModal, handleClaimCan
       <div className={styles.modalContentLogo}>
         <LogoSVG width={1280} height={920} />
       </div>
-      <p className={styles.claimText}>Claim reward for ad {claimAmount}.</p>
+      <p className={styles.claimText}>Claim reward for ad {claimAmount}</p>
       <p className={styles.claimText}>Reward amount: {rewardAmount}</p>
       <p className={styles.claimText}>Estimated transaction fee: 0</p>
       <Button shape="round" type="primary" onClick={handleClaimConfirmModal} style={{marginTop: 20}}>Submit</Button>

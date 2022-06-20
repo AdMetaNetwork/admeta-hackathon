@@ -41,11 +41,11 @@ const Home: FC = () => {
   const [adIpfs, setAdIpfs] = useState<string>('')
   const [claimAmount, setClaimAmount] = useState<string>('')
   const [rewardAmount, setRewardAmount] = useState<string>('')
+  const [adSwitchDisplay, setAdSwitchDisplay] = useState(false)
 
   const connectProvider = async () => {
     try {
-      // const wsProvider = new WsProvider('ws://testnet.admeta.network:9944');
-      const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+      const wsProvider = new WsProvider('ws://168.119.116.180:9944');
       setProvider(wsProvider)
       const api = await ApiPromise.create({ provider: wsProvider });
       setApi(api)
@@ -71,16 +71,13 @@ const Home: FC = () => {
     const SENDER = selectAccount;
     await web3Enable('AdMeta');
     const injector = await web3FromAddress(SENDER);
-    setTipText('Wait will your customized ads are ready...')
+    setTipText('Please set up your profile')
     api?.tx.user
       .addProfile(age, PreferencesEnum[preferences])
       .signAndSend(SENDER, { signer: injector.signer }, (status) => {
 
-        setTipText(adDisplay ? 'Wait will your customized ads are ready...' : 'You can set up ad display')
+        setTipText('You set up profile ok')
         setShowProfile(false)
-        setTimeout(() => {
-          queryUserAd()
-        }, 3000)
       });
 
   }
@@ -90,11 +87,24 @@ const Home: FC = () => {
     api?.query.user
       .users(SENDER)
       .then((c: any) => {
-        const adArr = JSON.parse(c.value.matchedAds.toString())
-        if (adArr.length) {
-          const adIndex = adArr[0] as number
-          setAdIndex(adIndex)
-          getAdInfo(adIndex)
+        console.log()
+        if (!c.value.matchedAds) {
+          message.info('Please first set up your profile')
+        } else {
+          const adArr = JSON.parse(c.value.matchedAds.toString())
+          setAdSwitchDisplay(c.value.adDisplay.toString() === 'true')
+          setShowAd(c.value.adDisplay.toString() === 'true')
+  
+          if (c.value.adDisplay.toString() !== 'true') {
+            message.info('Please set up your profile ad display')
+            return;
+          }
+  
+          if (adArr.length) {
+            const adIndex = adArr[0] as number
+            setAdIndex(adIndex)
+            getAdInfo(adIndex)
+          }
         }
 
       })
@@ -117,10 +127,10 @@ const Home: FC = () => {
         const amount: string = (+c.value.amount / Math.pow(10, 12)) + ''
 
         setAdIpfs(url)
-        setShowAd(adDisplay)
         setClaimAmount(cli)
         setRewardAmount(amount)
-        setTipText('Your customized ad')
+
+        setTipText(adSwitchDisplay ? 'Your customized ad' : 'Your should set up ad display')
       })
   }
 
@@ -130,6 +140,13 @@ const Home: FC = () => {
 
   const handleCancelConnectModal = () => {
     setShowConnectModal(false)
+    setConnect(false)
+    setAdDisplay(false)
+    setShowProfile(false)
+  }
+
+  const handleCancelConnectModalW = () => {
+    setShowConnectModal(false)
   }
 
   const handleConfirmConnectModal = () => {
@@ -137,9 +154,12 @@ const Home: FC = () => {
       message.info('Please select account!')
       return
     }
+    if (!walletList.length) {
+      message.info('Please use polkadot.js create account!')
+      return
+    }
     setConnect(true)
     setTipText('You need to set up your profile before using it.')
-    setShowProfile(true)
     setShowConnectModal(false)
   }
 
@@ -172,6 +192,7 @@ const Home: FC = () => {
       .claimReward(adIndex)
       .signAndSend(SENDER, { signer: injector.signer }, (status) => {
         setShowClaimModal(false)
+        setTipText('You will be rewarded')
       });
 
   }
@@ -193,7 +214,6 @@ const Home: FC = () => {
   }
 
   const handleselectAccount = (account: string) => {
-    console.log(account)
     setSelectAccount(account)
     localStorage.setItem('_select_account', account)
   }
@@ -221,6 +241,22 @@ const Home: FC = () => {
       });
   }
 
+  const handleCreateProfile = () => {
+    const SENDER = selectAccount;
+    api?.query.user
+      .users(SENDER)
+      .then((c: any) => {
+        console.log(c.value.adDisplay.toString() === 'true')
+        setAdSwitchDisplay(c.value.adDisplay.toString() === 'true')
+        setShowProfile(true)
+      })
+  }
+
+  const handleShowProfileAd = async () => {
+    setTipText('Wait will your customized ads are ready...')
+    queryUserAd()
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -231,10 +267,19 @@ const Home: FC = () => {
       <Bg />
 
       <main className={styles.main}>
-        <TopBar address={selectAccount} isConnected={isConnected} handleShowConnectModal={handleShowConnectModal} />
+        <TopBar
+          address={selectAccount}
+          isConnected={isConnected}
+          handleShowConnectModal={handleShowConnectModal}
+          handleCreateProfile={handleCreateProfile}
+          handleShowProfileAd={handleShowProfileAd}
+        />
 
         <ConnectModal
-          isShowModal={isShowConnectModal} handleCancelConnectModal={handleCancelConnectModal} handleConfirmConnectModal={handleConfirmConnectModal}
+          isShowModal={isShowConnectModal}
+          handleCancelConnectModal={handleCancelConnectModal} 
+          handleCancelConnectModalW={handleCancelConnectModalW}
+          handleConfirmConnectModal={handleConfirmConnectModal}
           isConnectWallet={isConnected}
           handleOpenPlokadot={handleOpenPlokadot}
           walletList={walletList}
@@ -251,6 +296,7 @@ const Home: FC = () => {
               handleProfileGender={handleProfileGender}
               handleProfilePreferences={handleProfilePreferences}
               handleProfileAdDisplay={handleProfileAdDisplay}
+              adSwitchDisplay={adSwitchDisplay}
             />
             :
             null

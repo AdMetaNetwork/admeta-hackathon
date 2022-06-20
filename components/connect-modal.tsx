@@ -15,16 +15,17 @@ type Props = {
   walletList: Wallet[]
   handleselectAccount: (account: string) => void
   selectAccount: string
+  handleCancelConnectModalW: () => void
 };
 
-const ConnectModal: FC<Props> = ({ isShowModal, handleCancelConnectModal, handleConfirmConnectModal, isConnectWallet, handleOpenPlokadot, walletList, handleselectAccount, selectAccount }) => {
+const ConnectModal: FC<Props> = ({ isShowModal, handleCancelConnectModal, handleConfirmConnectModal, isConnectWallet, handleOpenPlokadot, walletList, handleselectAccount, selectAccount, handleCancelConnectModalW }) => {
 
   return (
     <Modal
       title="Sign in to view your account balance"
       style={{ top: 20 }}
       visible={isShowModal}
-      onCancel={handleCancelConnectModal}
+      onCancel={handleCancelConnectModalW}
       footer={null}
       centered
       width={'50%'}
