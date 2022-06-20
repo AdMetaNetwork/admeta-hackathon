@@ -127,8 +127,8 @@ const Home: FC = () => {
         const amount: string = (+c.value.amount / Math.pow(10, 12)) + ''
 
         setAdIpfs(url)
-        setClaimAmount(cli)
-        setRewardAmount(amount)
+        setClaimAmount(idx + '')
+        setRewardAmount(cli)
 
         setTipText(adSwitchDisplay ? 'Your customized ad' : 'Your should set up ad display')
       })
