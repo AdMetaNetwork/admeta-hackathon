@@ -243,6 +243,7 @@ const Home: FC = () => {
 
   const handleCreateProfile = () => {
     const SENDER = selectAccount;
+    setShowAd(false)
     api?.query.user
       .users(SENDER)
       .then((c: any) => {
@@ -253,6 +254,7 @@ const Home: FC = () => {
   }
 
   const handleShowProfileAd = async () => {
+    setShowProfile(false)
     setTipText('Wait will your customized ads are ready...')
     queryUserAd()
   }
@@ -324,7 +326,7 @@ const Home: FC = () => {
       </main>
 
       <footer className={styles.footer}>
-        Powered by Litentry
+        Powered by AdMeta
       </footer>
     </div>
   )
