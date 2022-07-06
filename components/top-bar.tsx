@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Button } from 'antd'
 import { Avatar } from 'antd';
 import LogoSVG from './logo-svg'
+import Link from 'next/link'
 
 type Props = {
   address: string;
@@ -33,6 +34,9 @@ const TopBar: FC<Props> = ({ address, isConnected, handleShowConnectModal, handl
           <div className={styles.btns}>
             <div className={styles.btnC} onClick={handleCreateProfile}>Profile</div>
             <div className={styles.btnC} onClick={handleShowProfileAd}>AD</div>
+            <Link href="/ad">
+              <div className={styles.btnC}>Propose</div>
+            </Link>
             <Button className={styles.right} type="primary" onClick={handleShowConnectModal}>
               <Avatar style={{ border: '2px solid #ffffff' }} size={32} src='https://joeschmoe.io/api/v1/random' />
               <span className={styles.address}>{formatAddress(address)}</span>
@@ -44,7 +48,6 @@ const TopBar: FC<Props> = ({ address, isConnected, handleShowConnectModal, handl
               <span className={styles.btnLabel}>Connect to Polkadot.js Extension</span>
             </Button >
           </div>
-
       }
     </div >
   )
