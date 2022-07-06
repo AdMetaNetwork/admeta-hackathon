@@ -21,6 +21,10 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
 
+  if (req.url !== '/api/upload') {
+    res.status(404).json({ name: 'ok' })
+    return
+  }
 
   // 写入文件
   var data = req.body.url.replace(/^data:image\/\w+;base64,/, "");

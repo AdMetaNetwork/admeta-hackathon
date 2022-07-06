@@ -41,7 +41,7 @@ const Ad: FC = () => {
   const getFile = (key: string) => {
     axios({
       method: 'get',
-      url: `/api/getIPFS?key=${key}`
+      url: window.location.origin + `/api/getIPFS?key=${key}`
     }).then((e) => {
       setIpfs(e.data.url)
     })
@@ -59,7 +59,7 @@ const Ad: FC = () => {
       getBase64(info.file.originFileObj as RcFile, url => {
         axios({
           method: 'post',
-          url: '/api/upload',
+          url: window.location.origin + '/api/upload',
           data: {
             url,
             key: info.file.name
@@ -160,7 +160,9 @@ const Ad: FC = () => {
 
   return (
     <div className={styles.propose}>
-      <div className={styles.title}>Propose AD</div>
+      <div className={styles.title} onClick={() => {
+        getFile('ad.jpeg')
+      }}>Propose AD</div>
       <div className={styles.formBox}>
         <Spin tip="Loading..." spinning={spinning}>
           <div className={styles.fromItem}>
@@ -175,13 +177,46 @@ const Ad: FC = () => {
                   height={100}
                 />
                 :
-                <Upload
-                  listType="picture-card"
-                  accept='image/png,image/jpg'
-                  onChange={handleChange}
-                >
-                  {uploadButton}
-                </Upload>
+                // <Upload
+                //   listType="picture-card"
+                //   accept='image/png,image/jpg'
+                //   onChange={handleChange}
+                // >
+                //   {uploadButton}
+                // </Upload>
+
+                <input type="file" onChange={(e) => {
+                  // console.log(e)
+                  var reader = new FileReader();
+                  const file = e.target.files![0];
+                  if (file) {
+
+                    reader.readAsDataURL(file);
+                    reader.onloadend = function () {
+                      //将转换结果赋值给img标签
+                      setSpinning(true)
+                      const key = file.name
+                      const url = reader.result
+                      axios({
+                        method: 'post',
+                        url: window.location.origin + '/api/upload',
+                        data: {
+                          url,
+                          key,
+                        },
+                      }).then((e) => {
+                        console.log(e.data)
+                        if (e.data.name === 'ok') {
+                          setImg(url as string)
+                          setSpinning(false)
+                          getFile(key)
+                        }
+
+                      })
+                    }
+
+                  }
+                }} />
             }
 
           </div>
