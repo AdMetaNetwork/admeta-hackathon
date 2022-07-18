@@ -26,6 +26,7 @@ const Ad: FC = () => {
   };
 
   const [img, setImg] = useState('');
+  const [targetUrl, setTargetUrl] = useState('');
   const [spinning, setSpinning] = useState(false)
   const [ipfs, setIpfs] = useState('')
   const [cpi, setCpi] = useState(0)
@@ -112,6 +113,10 @@ const Ad: FC = () => {
       message.info('Please upload img')
       return
     }
+    if (!targetUrl) {
+      message.info('Please input targetUrl')
+      return
+    }
     if (!cpi) {
       message.info('Please input cpi')
       return
@@ -145,7 +150,7 @@ const Ad: FC = () => {
     const injector = await web3FromAddress(SENDER);
 
     api?.tx.ad
-      .proposeAd(ipfs, cpi, amount, endBlock, {
+      .proposeAd(ipfs, targetUrl, cpi, amount, endBlock, {
         age: {
           max,
           min
@@ -221,6 +226,18 @@ const Ad: FC = () => {
 
           </div>
         </Spin>
+        <div className={styles.fromItem}>
+          <div className={styles.left}>Target Url:</div>
+          <Input
+            className={styles.right}
+            defaultValue=""
+            type="text"
+            placeholder="Please input target url"
+            onChange={(e) => {
+              setTargetUrl(e.target.value)
+            }}
+          />
+        </div>
         <div className={styles.fromItem}>
           <div className={styles.left}>Cpi:</div>
           <Input
