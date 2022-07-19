@@ -80,8 +80,6 @@ const Home: NextPage = () => {
 
   }, [api, provider, list])
 
-
-
   return (
     <Spin tip="Loading..." spinning={spinning}>
       <div className={styles.adList}>
