@@ -60,12 +60,12 @@ const Home: NextPage = () => {
           })
 
           let a:any[] = JSON.parse(`[${arr.toString()}]`)
+          console.log(a)
           a.forEach(item => {
             item.target = hexToString(item.target)
             item.metadata = hexToString(item.metadata)
           });
           setList(a)
-          console.log(a)
           setSpinning(false)
 
         })

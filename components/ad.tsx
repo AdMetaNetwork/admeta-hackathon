@@ -10,7 +10,7 @@ type Prop = {
 const Ad: FC<Prop> = ({handleAd, adIpfs}) => {
   return (
     <div className={styles.ad} onClick={handleAd}>
-      <a href="https://www.admeta.network" target="view_window">
+      <a href="http://127.0.0.1:8000?position=0%2C0&SCENE_DEBUG_PANEL" target="view_window">
         <Image src={adIpfs} alt="ad" width={2241 / 2} height={1260 / 2} preview={false} />
       </a>
 

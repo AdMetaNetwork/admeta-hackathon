@@ -10,6 +10,8 @@ import SetProfile from '../components/set-profile'
 import Ad from '../components/ad'
 import Claim from '../components/claim'
 import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { hexToString } from '@polkadot/util';
 import {
   web3Accounts,
   web3Enable,
@@ -87,19 +89,20 @@ const Home: FC = () => {
     api?.query.user
       .users(SENDER)
       .then((c: any) => {
-        console.log()
-        if (!c.value.matchedAds) {
+        const o = JSON.parse(c.toString())
+        console.log(o, '000000--->>>>')
+        if (!o.matchedAds.length) {
           message.info('Please first set up your profile')
         } else {
           const adArr = JSON.parse(c.value.matchedAds.toString())
           setAdSwitchDisplay(c.value.adDisplay.toString() === 'true')
           setShowAd(c.value.adDisplay.toString() === 'true')
-  
+
           if (c.value.adDisplay.toString() !== 'true') {
             message.info('Please set up your profile ad display')
             return;
           }
-  
+
           if (adArr.length) {
             const adIndex = adArr[0] as number
             setAdIndex(adIndex)
@@ -119,9 +122,11 @@ const Home: FC = () => {
   }
 
   const getAdInfo = async (idx: number) => {
+    const SENDER = selectAccount;
     api?.query.ad
-      .impressionAds(idx)
+      .impressionAds(SENDER, idx)
       .then((c: any) => {
+        console.log(c.toString(), '00000======>>>>')
         const url: string = decodeUtf8(c.value.metadata)
         const cli: string = (+c.value.cpi / Math.pow(10, 12)) + ''
         const amount: string = (+c.value.amount / Math.pow(10, 12)) + ''
@@ -130,8 +135,27 @@ const Home: FC = () => {
         setClaimAmount(idx + '')
         setRewardAmount(cli)
 
+        const o = JSON.parse(c.toString())
+
+        bindAd(SENDER, hexToString(o.target), hexToString(o.metadata))
+
         setTipText(adSwitchDisplay ? 'Your customized ad' : 'Your should set up ad display')
       })
+  }
+
+  const bindAd = (account: any, adurl: any, adimg: any) => {
+    axios({
+      method: 'post',
+      url: '/api/bind',
+      data: {
+        account,
+        adurl,
+        adimg
+      },
+    }).then((e) => {
+      console.log(e.data)
+
+    })
   }
 
   const handleShowConnectModal = () => {
@@ -247,9 +271,14 @@ const Home: FC = () => {
     api?.query.user
       .users(SENDER)
       .then((c: any) => {
-        console.log(c.value.adDisplay.toString() === 'true')
-        setAdSwitchDisplay(c.value.adDisplay.toString() === 'true')
-        setShowProfile(true)
+        if (c) {
+          setAdSwitchDisplay(c.value.adDisplay?.toString() === 'true')
+          setShowProfile(true)
+        } else {
+          setAdSwitchDisplay(false)
+          setShowProfile(true)
+        }
+
       })
   }
 
@@ -279,7 +308,7 @@ const Home: FC = () => {
 
         <ConnectModal
           isShowModal={isShowConnectModal}
-          handleCancelConnectModal={handleCancelConnectModal} 
+          handleCancelConnectModal={handleCancelConnectModal}
           handleCancelConnectModalW={handleCancelConnectModalW}
           handleConfirmConnectModal={handleConfirmConnectModal}
           isConnectWallet={isConnected}
