@@ -70,7 +70,7 @@ const Home: NextPage = () => {
   const testnode = () => {
     axios({
       method: 'get',
-      url: `/api/hello`,
+      url: `/api/random`,
     }).then((e) => {
       console.log(e.data)
       message.info(`ok: ${e.data.name}`)
@@ -113,7 +113,7 @@ const Home: NextPage = () => {
       <button onClick={up}>submit</button>
       <div style={{marginBottom: 20}}></div>
       <button onClick={getmb}>getmb</button>
-      {/* <button onClick={testnode}>testnode</button> */}
+      <button onClick={testnode}>testnode</button>
     </>
   )
 }

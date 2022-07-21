@@ -58,7 +58,21 @@ const Home: FC = () => {
 
   }
 
+  const getURLParams = () => {
+    const searchURL = location.search;
+    const params = new URLSearchParams(searchURL);
+    console.log(params)
+    const valueObj = Object.fromEntries(params);
+    console.log(valueObj.rd)
+    return valueObj;
+  }
+
   useEffect(() => {
+    if (getURLParams().rd) {
+      const idx = +(localStorage.getItem('_current_ad_index') || 0)
+      getAdInfo(idx)
+      setShowClaimModal(true)
+    }
     if (!provider) {
       connectProvider();
     }
@@ -122,7 +136,7 @@ const Home: FC = () => {
   }
 
   const getAdInfo = async (idx: number) => {
-    const SENDER = selectAccount;
+    const SENDER = selectAccount || localStorage.getItem('_select_account');
     api?.query.ad
       .impressionAds(SENDER, idx)
       .then((c: any) => {
@@ -138,6 +152,7 @@ const Home: FC = () => {
         const o = JSON.parse(c.toString())
 
         bindAd(SENDER, hexToString(o.target), hexToString(o.metadata))
+        localStorage.setItem('_current_ad_index', idx + '')
 
         setTipText(adSwitchDisplay ? 'Your customized ad' : 'Your should set up ad display')
       })
@@ -208,12 +223,13 @@ const Home: FC = () => {
   }
 
   const handleClaimConfirmModal = async () => {
-    const SENDER = selectAccount;
+    const SENDER = selectAccount || (localStorage.getItem('_select_account') || '');
     await web3Enable('AdMeta');
     const injector = await web3FromAddress(SENDER);
+    const idx = adIndex || +(localStorage.getItem('_current_ad_index') || 0)
     setTipText('Wait will your claim reward are ready...')
     api?.tx.user
-      .claimReward(adIndex)
+      .claimReward(SENDER, idx)
       .signAndSend(SENDER, { signer: injector.signer }, (status) => {
         setShowClaimModal(false)
         setTipText('You will be rewarded')
@@ -222,7 +238,7 @@ const Home: FC = () => {
   }
 
   const handleAd = () => {
-    setShowClaimModal(true)
+    // setShowClaimModal(true)
   }
 
   const handleOpenPlokadot = async () => {
