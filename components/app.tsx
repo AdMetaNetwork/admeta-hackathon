@@ -47,7 +47,7 @@ const Home: FC = () => {
 
   const connectProvider = async () => {
     try {
-      const wsProvider = new WsProvider('ws://168.119.116.180:9944');
+      const wsProvider = new WsProvider('wss://testnet.admeta.network');
       setProvider(wsProvider)
       const api = await ApiPromise.create({ provider: wsProvider });
       setApi(api)
@@ -103,8 +103,11 @@ const Home: FC = () => {
     api?.query.user
       .users(SENDER)
       .then((c: any) => {
+        console.log(c.toString(), '000000--->>>>', c.toString() === '')
+        if (c.toString() === '') {
+          return
+        }
         const o = JSON.parse(c.toString())
-        console.log(o, '000000--->>>>')
         if (!o.matchedAds.length) {
           message.info('Please first set up your profile')
         } else {
@@ -287,6 +290,7 @@ const Home: FC = () => {
     api?.query.user
       .users(SENDER)
       .then((c: any) => {
+        console.log(c.toString())
         if (c) {
           setAdSwitchDisplay(c.value.adDisplay?.toString() === 'true')
           setShowProfile(true)

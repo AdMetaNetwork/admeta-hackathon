@@ -44,7 +44,7 @@ export default function handler(
     dbo.collection("userAndAds").find(whereStr).toArray(async function (err: any, result: any) { // 返回集合中所有数据
       if (err) throw err;
 
-      const wsProvider = new WsProvider('ws://168.119.116.180:9944');
+      const wsProvider = new WsProvider('wss://testnet.admeta.network');
       const api = await ApiPromise.create({ provider: wsProvider });
 
       console.log('sss---->>>', result[result.length - 1].account)

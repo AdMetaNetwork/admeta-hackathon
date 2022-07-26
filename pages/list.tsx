@@ -28,7 +28,7 @@ const Home: NextPage = () => {
 
   const connectProvider = async () => {
     try {
-      const wsProvider = new WsProvider('ws://168.119.116.180:9944');
+      const wsProvider = new WsProvider('wss://testnet.admeta.network');
       setProvider(wsProvider)
       const api = await ApiPromise.create({ provider: wsProvider });
       setApi(api)
